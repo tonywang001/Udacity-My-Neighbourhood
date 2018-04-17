@@ -7,22 +7,24 @@ class GoogleMap extends Component {
     this.initMap = this.initMap.bind(this);
     this.componentDidMount = this.componentDidMount.bind(this);
     this.loadJs = this.loadJs.bind(this);
-    this.map = {};
+    // this.map = {};
   }
 
   componentDidMount() {
     console.log('compoenent did mount called');
     window.initMap = this.initMap;
     this.loadJs();
+    debugger;
   }
 
   initMap() {
     var randomPlace = {lat: 40.7413549, lng: -73.99802439999996};
-    console.log('initmap called ' + this.refs.map);
-    this.map = new window.google.maps.Map(this.refs.map, {
+    const map = new window.google.maps.Map(this.refs.map, {
           zoom: 12,
           center: randomPlace 
     });
+
+    this.props.setMap(map);
   }
 
   loadJs() {
