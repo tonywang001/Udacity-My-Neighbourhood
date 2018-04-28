@@ -11,8 +11,10 @@ class App extends Component {
     this.loadJs = this.loadJs.bind(this);
     this.initMap = this.initMap.bind(this);
     this.state = {
-      map: null
+      map: null,
+      markers: []
     };
+    this.randomPlace = {lat: 40.7413549, lng: -73.99802439999996};
   }
 
   componentDidMount() {
@@ -23,25 +25,35 @@ class App extends Component {
   loadJs() {
     const ref = window.document.getElementsByTagName("script")[0];
     let script = window.document.createElement("script");
-    // script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDPbmTRn7XZzO1GTG3xI2se3My383oGZds&libraries=places&callback=initMap';
     script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyDPbmTRn7XZzO1GTG3xI2se3My383oGZds&callback=initMap&libraries=places';
     script.async = true;
     script.defer = true;
-    // script.type = 'text/javascript';
     ref.parentNode.insertBefore(script, ref);
   }
 
   initMap() {
-    var randomPlace = {lat: 40.7413549, lng: -73.99802439999996};
     const map = new window.google.maps.Map(this.refs.map, {
           zoom: 12,
-          center: randomPlace 
+          center: this.randomPlace 
     });
     this.setState({map});
   }
 
-  onSearch(value) {
-    console.log('searching for ', value);
+  clearAllMarkers() {
+    this.state.markers.forEach(function(marker) {
+      console.log('delete marker ' + marker);
+      marker.setMap(null);
+    });
+  }
+
+  onSearch(markerList) {
+    this.clearAllMarkers();
+    this.setState({
+      markers: markerList
+    },
+    () => {
+      console.log('state ' + this.state);
+    });
   }
 
   render() {
@@ -52,7 +64,7 @@ class App extends Component {
         </header>
         <div className="Main-content">
           <aside>
-            {this.state.map && <SearchMenu onSearch={this.onSearch} map={this.state.map} />}
+            {this.state.map && <SearchMenu onSearch={this.onSearch} location={this.randomPlace} map={this.state.map} />}
           </aside>
           <main>
             <div ref="map" className="Map-Container"></div>
