@@ -12,7 +12,8 @@ class App extends Component {
     this.initMap = this.initMap.bind(this);
     this.state = {
       map: null,
-      markers: []
+      markers: [],
+      places: []
     };
     this.randomPlace = {lat: 40.7413549, lng: -73.99802439999996};
   }
@@ -46,10 +47,12 @@ class App extends Component {
     });
   }
 
-  onSearch(markerList) {
+  onSearch(markerList, placeList) {
+    debugger;
     this.clearAllMarkers();
     this.setState({
-      markers: markerList
+      markers: markerList,
+      places: placeList
     },
     () => {
       console.log('state ' + this.state);
@@ -64,7 +67,11 @@ class App extends Component {
         </header>
         <div className="Main-content">
           <aside>
-            {this.state.map && <SearchMenu onSearch={this.onSearch} location={this.randomPlace} map={this.state.map} />}
+            {this.state.map && 
+              <SearchMenu onSearch={this.onSearch} 
+                          location={this.randomPlace} 
+                          map={this.state.map} 
+                          places={this.state.places}/>}
           </aside>
           <main>
             <div ref="map" className="Map-Container"></div>

@@ -17,6 +17,7 @@ class SearchMenu extends Component {
 
   onSearch(e) {
     let markerList = [];
+    let placeList = [];
     console.log(e.target.value);
 
     const request = {
@@ -34,14 +35,16 @@ class SearchMenu extends Component {
             for (var i = 0; i < results.length; i++) {
               // var place = results[i];
               markerList.push(this.createMarker(results[i]));
-              console.log(results[i]);
+              placeList.push(results[i]);
+              // console.log(results[i]);
             }
+            // update list and map with markers
+            this.props.onSearch(markerList, placeList);
           }
         });
       }, 500);
     }
 
-    this.props.onSearch(markerList);
   }
 
   createMarker(place) {
@@ -61,12 +64,23 @@ class SearchMenu extends Component {
   render() {
 
     // const { onSearch } = this.props;
+    const { places } = this.props;
+    console.log('props: ' + this.props);
+    console.log('places from props' + places);
 
     return (
       <div className="Search-Menu-Container">
         <div className="search-Menu-Input-Wrapper">
           <input type="text" placeholder="Search by title or author"
            onChange={this.onSearch}/>
+        </div>
+        <div className="search-Menu-list">
+          <ul>
+            {console.log('places in render' + places)}
+            {places.map((place) =>
+              <li>{place.name}</li>
+            )}
+          </ul>
         </div>
       </div>
     );
