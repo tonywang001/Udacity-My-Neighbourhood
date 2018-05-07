@@ -48,7 +48,6 @@ class App extends Component {
   }
 
   onSearch(markerList, placeList) {
-    debugger;
     this.clearAllMarkers();
     this.setState({
       markers: markerList,

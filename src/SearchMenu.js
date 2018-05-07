@@ -9,10 +9,12 @@ class SearchMenu extends Component {
     this.serivce = null;
     this.pyrmont = {lat: -33.8665433, lng: 151.1956316};
     this.delayTimer = null;
+    this.infowindow = null;
   }
 
   componentDidMount() {
     this.service = new window.google.maps.places.PlacesService(this.props.map);
+    this.infowindow = new window.google.maps.InfoWindow();
   }
 
   onSearch(e) {
@@ -48,17 +50,30 @@ class SearchMenu extends Component {
   }
 
   createMarker(place) {
+    console.log('place ' + JSON.stringify(place));
     var marker = new window.google.maps.Marker({
       map: this.props.map,
+      name: place.name,
+      address: place.formatted_address,
       position: place.geometry.location
     });
 
-    return marker;
+    const infowindow = this.infowindow;
+    const map = this.props.map;
 
-    // google.maps.event.addListener(marker, 'click', function() {
-    //   infowindow.setContent(place.name);
-    //   infowindow.open(map, this);
-    // });
+    window.google.maps.event.addListener(marker, 'click', function() {
+      // infowindow.setContent(place.name);
+      // infowindow.open(map, this);
+      console.log('marker clicked');
+      infowindow.marker = marker;
+      infowindow.setContent('<div>' + marker.name + '</div><div>' + marker.address + '</div>');
+      infowindow.open(map, marker);
+      infowindow.addListener('closeclick', () => {
+        infowindow.setMarker(null);
+      });
+    });
+
+    return marker;
   }
 
   render() {
