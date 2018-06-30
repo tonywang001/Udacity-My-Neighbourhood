@@ -61,7 +61,7 @@ class SearchMenu extends Component {
     const infowindow = this.infowindow;
     const map = this.props.map;
 
-    window.google.maps.event.addListener(marker, 'click', function() {
+    window.google.maps.event.addListener(marker, 'click', () => {
       // infowindow.setContent(place.name);
       // infowindow.open(map, this);
       console.log('marker clicked');
@@ -71,6 +71,30 @@ class SearchMenu extends Component {
       infowindow.addListener('closeclick', () => {
         infowindow.setMarker(null);
       });
+
+      // fire off ajax call to yelp here
+      // key : Bearer R_kn8U2P7celBXQZT-qQE1lp2tO5LF9fbrWiXYoYYtHh-0d5EC0wBF90NhbMoEo6304GYh1wHp-FRvDd8DCuZN-aJVvzyEh5K-G88xuQm6PB1DUVLjTQUXJ3d4TwWnYx
+      const option = {
+        method: 'GET',
+        headers: {
+          Authorization: 'Bearer R_kn8U2P7celBXQZT-qQE1lp2tO5LF9fbrWiXYoYYtHh-0d5EC0wBF90NhbMoEo6304GYh1wHp-FRvDd8DCuZN-aJVvzyEh5K-G88xuQm6PB1DUVLjTQUXJ3d4TwWnYx'
+        }
+      };
+      const location = 'toronto';
+      const term = 'shawarma';
+      const url = `https://api.yelp.com/v3/businesses/search?location=${location}&term=${term}`;
+      fetch(url,option)
+      .then(res => {
+        if (res.status !== 200) {
+          //TODO: error case
+          return;
+        }
+        return res.json();
+      })
+      .then(res => {
+        debugger;
+        console.log(res);
+      })
     });
 
     return marker;
