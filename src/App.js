@@ -14,7 +14,8 @@ class App extends Component {
     this.state = {
       map: null,
       markers: [],
-      places: []
+      places: [],
+      placesToShow: []
     };
     this.service = null;
     this.infowindow = null;
@@ -55,23 +56,45 @@ class App extends Component {
     });
   }
 
-  onSearch(markerList, placeList) {
-    this.clearAllMarkers();
-    this.setState(
-      {
-        markers: markerList,
-        places: placeList
-      },
-      () => {
-        console.log("state " + this.state);
+  onSearch(value) {
+    let places = [];
+    this.state.places.forEach(place => {
+      if (place.name.toLowerCase().includes(value.toLowerCase())) {
+        places.push(place);
       }
-    );
+    });
+    // this.clearAllMarkers();
+    this.updateList(places);
+  }
+
+  /**
+   * Update place list and markers to display on map
+   */
+  updateList(placeList) {
+    if (this.state.placesToShow.length === 0) {
+      this.setState({placesToShow: this.state.places}, this.updateMarkers);
+    } else {
+      this.setState({placesToShow: placeList}, this.updateMarkers);
+    }
+  }
+
+  /**
+   * Update markers according to the place list
+   */
+  updateMarkers() {
+    this.state.markers.forEach(marker => {
+      marker.setMap(null);
+      this.state.placesToShow.forEach(place => {
+        if (place.name.toLowerCase() === marker.name.toLowerCase()) {
+          marker.setMap(this.state.map);
+        }
+      });
+    });
   }
 
   getDefaultLocations() {
     let markerList = [];
     let placeList = [];
-    // console.log(e.target.value);
 
     const request = {
       location: this.randomPlace,
@@ -82,19 +105,16 @@ class App extends Component {
     this.service.textSearch(request, (results, status) => {
       if (status === window.google.maps.places.PlacesServiceStatus.OK) {
         for (var i = 0; i < results.length; i++) {
-          // var place = results[i];
           markerList.push(this.createMarker(results[i]));
           placeList.push(results[i]);
-          // console.log(results[i]);
         }
         // update list and map with markers
-        // this.props.onSearch(markerList, placeList);
         this.setState({
           markers: markerList,
           places: placeList
         },
         () => {
-          console.log("state " + this.state);
+          this.updateList(placeList);
         });
       }
     });
@@ -165,7 +185,7 @@ class App extends Component {
                 onSearch={this.onSearch}
                 location={this.randomPlace}
                 map={this.state.map}
-                places={this.state.places}
+                places={this.state.placesToShow}
               />
             )}
           </aside>

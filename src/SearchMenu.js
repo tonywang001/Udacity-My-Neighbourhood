@@ -18,34 +18,36 @@ class SearchMenu extends Component {
   }
 
   onSearch(e) {
-    let markerList = [];
-    let placeList = [];
-    console.log(e.target.value);
 
-    const request = {
-      location: this.props.location,
-      radius: '50',
-      query: e.target.value
-    };
+    this.props.onSearch(e.target.value);
+    // let markerList = [];
+    // let placeList = [];
+    // console.log(e.target.value);
 
-    clearTimeout(this.delayTimer);
-    if (e.target.value) {
-      // delay 0.5 second before sending the text search request
-      this.delayTimer = setTimeout(() => {
-        this.service.textSearch(request, (results, status) => {
-          if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-            for (var i = 0; i < results.length; i++) {
-              // var place = results[i];
-              markerList.push(this.createMarker(results[i]));
-              placeList.push(results[i]);
-              // console.log(results[i]);
-            }
-            // update list and map with markers
-            this.props.onSearch(markerList, placeList);
-          }
-        });
-      }, 500);
-    }
+    // const request = {
+    //   location: this.props.location,
+    //   radius: '50',
+    //   query: e.target.value
+    // };
+
+    // clearTimeout(this.delayTimer);
+    // if (e.target.value) {
+    //   // delay 0.5 second before sending the text search request
+    //   this.delayTimer = setTimeout(() => {
+    //     this.service.textSearch(request, (results, status) => {
+    //       if (status === window.google.maps.places.PlacesServiceStatus.OK) {
+    //         for (var i = 0; i < results.length; i++) {
+    //           // var place = results[i];
+    //           markerList.push(this.createMarker(results[i]));
+    //           placeList.push(results[i]);
+    //           // console.log(results[i]);
+    //         }
+    //         // update list and map with markers
+    //         this.props.onSearch(markerList, placeList);
+    //       }
+    //     });
+    //   }, 500);
+    // }
 
   }
 
