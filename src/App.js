@@ -7,6 +7,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.onSearch = this.onSearch.bind(this);
+    this.onClickPlace = this.onClickPlace.bind(this);
     this.loadJs = this.loadJs.bind(this);
     this.initMap = this.initMap.bind(this);
     this.getDefaultLocations = this.getDefaultLocations.bind(this);
@@ -172,6 +173,34 @@ class App extends Component {
     return marker;
   }
 
+  onClickPlace(place) {
+    console.log('place clicked' + place);
+    this.openInfoWindow(this.getMarkerForPlace(place));
+  }
+
+  getMarkerForPlace(place) {
+    for(let marker of this.state.markers) {
+      if (marker.name === place.name) {
+        return marker;
+      }
+    }
+    return null;
+  }
+
+  openInfoWindow(marker) {
+    marker.setAnimation(window.google.maps.Animation.BOUNCE);
+    setTimeout(() => {
+      marker.setAnimation(null);
+    }, 2000);
+    let infowindow = this.infowindow;
+    infowindow.marker = marker;
+    infowindow.setContent('<div>' + marker.name + '</div><div>' + marker.address + '</div>');
+    infowindow.open(this.state.map, marker);
+    infowindow.addListener('closeclick', () => {
+      infowindow.setMarker(null);
+    });
+  }
+
   render() {
     return (
       <div className="App">
@@ -186,6 +215,7 @@ class App extends Component {
                 location={this.randomPlace}
                 map={this.state.map}
                 places={this.state.placesToShow}
+                onClickPlace={this.onClickPlace}
               />
             )}
           </aside>

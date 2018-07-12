@@ -6,6 +6,7 @@ class SearchMenu extends Component {
   constructor(props) {
     super(props);
     this.onSearch = this.onSearch.bind(this);
+    this.onClickListItem = this.onClickListItem.bind(this);
     this.serivce = null;
     this.pyrmont = {lat: -33.8665433, lng: 151.1956316};
     this.delayTimer = null;
@@ -102,6 +103,10 @@ class SearchMenu extends Component {
     return marker;
   }
 
+  onClickListItem(place) {
+    this.props.onClickPlace(place);
+  }
+
   render() {
 
     // const { onSearch } = this.props;
@@ -119,7 +124,7 @@ class SearchMenu extends Component {
           <ul>
             {console.log('places in render' + places)}
             {places.map((place) =>
-              <li>{place.name}</li>
+              <li onClick={() => this.onClickListItem(place)}>{place.name}</li>
             )}
           </ul>
         </div>
