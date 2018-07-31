@@ -145,7 +145,45 @@ class App extends Component {
         infowindow.setMarker(null);
       });
 
-      // fire off ajax call to yelp here
+      // fire off ajax call to foursquare
+      const clientId = '41TLWTZUDSOVQ3N3C1GCFFX0QFOPJEIGA04XEWJ0WMHUMQTC';
+      const clientSecret = 'XZIU5S31HT1GIXRRWCE3XDWF50L5ER1SFZHO0ISSU4PRGXMT';
+      const option = {
+        method: 'GET'
+      }
+      const ll = '43.497875,-79.720438';
+      const query = marker.name;
+      const v = '20180718';
+      const limit = 1;
+      const url = `https://api.foursquare.com/v2/venues/search?ll=${ll}&query=${query}&limit=${limit}&v=${v}&client_id=${clientId}&client_secret=${clientSecret}`;
+
+      console.log('url : ' + url);
+      fetch(url, option)
+      .then(res => {
+        return res.json();
+      })
+      .then(res => {
+        if (res.response && res.response.venues[0] && res.response.venues[0].id) {
+          const id = res.response.venues[0].id;
+          const likesUrl = `https://api.foursquare.com/v2/venues/${id}/likes?v=${v}&client_id=${clientId}&client_secret=${clientSecret}`;
+          fetch(likesUrl, {method: 'GET'})
+          .then(res => {
+            return res.json();
+          })
+          .then(res => {
+            if (res.response && res.response.likes) {
+              console.log('likes count: ' + res.response.likes.count);
+              const currentContent = infowindow.getContent();
+              const newContent = '<div>foursquare likes:' + res.response.likes.count + '</div>';
+              infowindow.setContent(currentContent + newContent);
+            }
+          });
+        }
+      })
+      .catch(err => {
+        console.log('err: ' + err);
+      });
+
       // key : Bearer R_kn8U2P7celBXQZT-qQE1lp2tO5LF9fbrWiXYoYYtHh-0d5EC0wBF90NhbMoEo6304GYh1wHp-FRvDd8DCuZN-aJVvzyEh5K-G88xuQm6PB1DUVLjTQUXJ3d4TwWnYx
     //   const option = {
     //     method: 'GET',
