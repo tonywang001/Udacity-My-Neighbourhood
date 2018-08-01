@@ -21,6 +21,7 @@ class App extends Component {
     this.service = null;
     this.infowindow = null;
     this.randomPlace = { lat: 43.497875, lng: -79.720438 };
+    this.SIZE = 5;
   }
 
   componentDidMount() {
@@ -52,7 +53,6 @@ class App extends Component {
 
   clearAllMarkers() {
     this.state.markers.forEach(function(marker) {
-      console.log("delete marker " + marker);
       marker.setMap(null);
     });
   }
@@ -105,7 +105,7 @@ class App extends Component {
 
     this.service.textSearch(request, (results, status) => {
       if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-        for (var i = 0; i < results.length; i++) {
+        for (var i = 0; i < results.length && i < this.SIZE; i++) {
           markerList.push(this.createMarker(results[i]));
           placeList.push(results[i]);
         }
@@ -122,8 +122,6 @@ class App extends Component {
   }
 
   createMarker(place) {
-    console.log('place ' + JSON.stringify(place));
-    console.log('map in createMarker' + this.map);
     var marker = new window.google.maps.Marker({
       map: this.state.map,
       name: place.name,
@@ -131,88 +129,14 @@ class App extends Component {
       position: place.geometry.location
     });
 
-    const infowindow = this.infowindow;
-    const map = this.state.map;
-
     window.google.maps.event.addListener(marker, 'click', () => {
-      // infowindow.setContent(place.name);
-      // infowindow.open(map, this);
-      console.log('marker clicked');
-      infowindow.marker = marker;
-      infowindow.setContent('<div>' + marker.name + '</div><div>' + marker.address + '</div>');
-      infowindow.open(map, marker);
-      infowindow.addListener('closeclick', () => {
-        infowindow.setMarker(null);
-      });
-
-      // fire off ajax call to foursquare
-      const clientId = '41TLWTZUDSOVQ3N3C1GCFFX0QFOPJEIGA04XEWJ0WMHUMQTC';
-      const clientSecret = 'XZIU5S31HT1GIXRRWCE3XDWF50L5ER1SFZHO0ISSU4PRGXMT';
-      const option = {
-        method: 'GET'
-      }
-      const ll = '43.497875,-79.720438';
-      const query = marker.name;
-      const v = '20180718';
-      const limit = 1;
-      const url = `https://api.foursquare.com/v2/venues/search?ll=${ll}&query=${query}&limit=${limit}&v=${v}&client_id=${clientId}&client_secret=${clientSecret}`;
-
-      console.log('url : ' + url);
-      fetch(url, option)
-      .then(res => {
-        return res.json();
-      })
-      .then(res => {
-        if (res.response && res.response.venues[0] && res.response.venues[0].id) {
-          const id = res.response.venues[0].id;
-          const likesUrl = `https://api.foursquare.com/v2/venues/${id}/likes?v=${v}&client_id=${clientId}&client_secret=${clientSecret}`;
-          fetch(likesUrl, {method: 'GET'})
-          .then(res => {
-            return res.json();
-          })
-          .then(res => {
-            if (res.response && res.response.likes) {
-              console.log('likes count: ' + res.response.likes.count);
-              const currentContent = infowindow.getContent();
-              const newContent = '<div>foursquare likes:' + res.response.likes.count + '</div>';
-              infowindow.setContent(currentContent + newContent);
-            }
-          });
-        }
-      })
-      .catch(err => {
-        console.log('err: ' + err);
-      });
-
-      // key : Bearer R_kn8U2P7celBXQZT-qQE1lp2tO5LF9fbrWiXYoYYtHh-0d5EC0wBF90NhbMoEo6304GYh1wHp-FRvDd8DCuZN-aJVvzyEh5K-G88xuQm6PB1DUVLjTQUXJ3d4TwWnYx
-    //   const option = {
-    //     method: 'GET',
-    //     headers: {
-    //       Authorization: 'Bearer R_kn8U2P7celBXQZT-qQE1lp2tO5LF9fbrWiXYoYYtHh-0d5EC0wBF90NhbMoEo6304GYh1wHp-FRvDd8DCuZN-aJVvzyEh5K-G88xuQm6PB1DUVLjTQUXJ3d4TwWnYx'
-    //     }
-    //   };
-    //   const location = 'toronto';
-    //   const term = 'shawarma';
-    //   const url = `https://api.yelp.com/v3/businesses/search?location=${location}&term=${term}`;
-    //   fetch(url,option)
-    //   .then(res => {
-    //     if (res.status !== 200) {
-    //       //TODO: error case
-    //       return;
-    //     }
-    //     return res.json();
-    //   })
-    //   .then(res => {
-    //     debugger;
-    //     console.log(res);
-    //   })
+      this.openInfoWindow(marker);
     });
 
     return marker;
   }
 
   onClickPlace(place) {
-    console.log('place clicked' + place);
     this.openInfoWindow(this.getMarkerForPlace(place));
   }
 
@@ -235,7 +159,55 @@ class App extends Component {
     infowindow.setContent('<div>' + marker.name + '</div><div>' + marker.address + '</div>');
     infowindow.open(this.state.map, marker);
     infowindow.addListener('closeclick', () => {
-      infowindow.setMarker(null);
+      // infowindow.setMarker(null);
+      infowindow.close();
+    });
+
+    // fire off ajax call to foursquare
+    const clientId = '41TLWTZUDSOVQ3N3C1GCFFX0QFOPJEIGA04XEWJ0WMHUMQTC';
+    const clientSecret = 'XZIU5S31HT1GIXRRWCE3XDWF50L5ER1SFZHO0ISSU4PRGXMT';
+    const option = {
+      method: 'GET'
+    }
+    const ll = '43.497875,-79.720438';
+    const query = marker.name;
+    const v = '20180718';
+    const limit = 1;
+    const url = `https://api.foursquare.com/v2/venues/search?ll=${ll}&query=${query}&limit=${limit}&v=${v}&client_id=${clientId}&client_secret=${clientSecret}`;
+
+    fetch(url, option)
+    .then(res => {
+      return res.json();
+    })
+    .then(res => {
+      if (res.response && res.response.venues[0] && res.response.venues[0].id) {
+        const id = res.response.venues[0].id;
+        const likesUrl = `https://api.foursquare.com/v2/venues/${id}/likes?v=${v}&client_id=${clientId}&client_secret=${clientSecret}`;
+        fetch(likesUrl, {method: 'GET'})
+        .then(res => {
+          return res.json();
+        })
+        .then(res => {
+          const currentContent = infowindow.getContent();
+          let newContent = '<div>foursquare likes:' + res.response.likes.count + '</div>';
+          if (res.response && res.response.likes) {
+            newContent = '<div>foursquare likes:' + res.response.likes.count + '</div>';
+          } else {
+            newContent = '<div>No foursquare data available</div>';
+          }
+          infowindow.setContent(currentContent + newContent);
+        });
+      } else {
+          const currentContent = infowindow.getContent();
+          const newContent = '<div>No foursquare data available</div>';
+          infowindow.setContent(currentContent + newContent);
+      }
+    })
+    .catch(err => {
+      const currentContent = infowindow.getContent();
+      const newContent = '<div>foursquare API failed to load</div>';
+      infowindow.setContent(currentContent + newContent);
+      console.log('foursquare API error: ' + err);
     });
   }
 
