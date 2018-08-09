@@ -3,6 +3,14 @@ import "./App.css";
 import NavBar from "./NavBar";
 import SearchMenu from "./SearchMenu";
 
+/**
+ * Handling map auth erro
+ */
+window.gm_authFailure = function() {
+  console.log("auth error");
+  alert("error loading google map - map authentication error");
+}
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -32,11 +40,17 @@ class App extends Component {
   loadJs() {
     const ref = window.document.getElementsByTagName("script")[0];
     let script = window.document.createElement("script");
+    // script.src =
+    //   "https://maps.googleapis.com/maps/api/js?key=AIzaSyDPbmTRn7XZzO1GTG3xI2se3My383oGZds&callback=initMap&libraries=places";
     script.src =
-      "https://maps.googleapis.com/maps/api/js?key=AIzaSyDPbmTRn7XZzO1GTG3xI2se3My383oGZds&callback=initMap&libraries=places";
+      "https://maps.googleapis.com/maps/apii/js?key=AIzaSyDPbmTRn7XZzO1GTG3xI2se3My383oGZds&callback=initMap&libraries=places";
     script.async = true;
     script.defer = true;
     ref.parentNode.insertBefore(script, ref);
+    script.onerror = (error) => {
+      console.log('error occured: ' + error);
+      alert("error loading google map");
+    }
   }
 
   initMap() {
@@ -211,6 +225,7 @@ class App extends Component {
     });
   }
 
+
   render() {
     return (
       <div className="App">
@@ -238,5 +253,8 @@ class App extends Component {
     );
   }
 }
+
+
+
 
 export default App;

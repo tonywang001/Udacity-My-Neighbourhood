@@ -33,13 +33,13 @@ class SearchMenu extends Component {
     return (
       <div className="Search-Menu-Container">
         <div className="search-Menu-Input-Wrapper">
-          <input type="text" placeholder="Search by title or author"
+          <input aria-label="search input by title" type="text" placeholder="Search by title or author"
            onChange={this.onSearch}/>
         </div>
         <div className="search-Menu-list">
           <ul>
-            {places.map((place) =>
-              <li key={place.id} onClick={() => this.onClickListItem(place)}>{place.name}</li>
+            {places.map((place, index) =>
+              <li tabIndex={index} key={place.id} onClick={() => this.onClickListItem(place)}>{place.name}</li>
             )}
           </ul>
         </div>
