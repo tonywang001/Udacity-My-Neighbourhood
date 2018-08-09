@@ -40,10 +40,8 @@ class App extends Component {
   loadJs() {
     const ref = window.document.getElementsByTagName("script")[0];
     let script = window.document.createElement("script");
-    // script.src =
-    //   "https://maps.googleapis.com/maps/api/js?key=AIzaSyDPbmTRn7XZzO1GTG3xI2se3My383oGZds&callback=initMap&libraries=places";
     script.src =
-      "https://maps.googleapis.com/maps/apii/js?key=AIzaSyDPbmTRn7XZzO1GTG3xI2se3My383oGZds&callback=initMap&libraries=places";
+      "https://maps.googleapis.com/maps/api/js?key=AIzaSyDPbmTRn7XZzO1GTG3xI2se3My383oGZds&callback=initMap&libraries=places";
     script.async = true;
     script.defer = true;
     ref.parentNode.insertBefore(script, ref);
