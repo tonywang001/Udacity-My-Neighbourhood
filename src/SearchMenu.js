@@ -37,9 +37,9 @@ class SearchMenu extends Component {
            onChange={this.onSearch}/>
         </div>
         <div className="search-Menu-list">
-          <ul>
+          <ul role="group">
             {places.map((place, index) =>
-              <li tabIndex={index} key={place.id} onClick={() => this.onClickListItem(place)}>{place.name}</li>
+              <li role="menuitem" tabIndex={index} key={place.id} onClick={() => this.onClickListItem(place)}>{place.name}</li>
             )}
           </ul>
         </div>
